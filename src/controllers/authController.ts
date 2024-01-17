@@ -63,6 +63,7 @@ try {
 
     if(!username || !password){
         res.status(400).json({message:"Enter all the required fields"});
+        return;
     }
 
     const checkUser:IUser | null = await User.findOne({username});
