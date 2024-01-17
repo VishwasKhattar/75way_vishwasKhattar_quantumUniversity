@@ -11,25 +11,25 @@ interface IUserAnswer {
         questionNumber: number;
         selectedOption: string;
     }[];
+    startTime?: number;
+    expirationTime?: number;
 }
 
 interface IQues {
     questionNumber: number;
-    question: string;
+    questionText: string;
     options: string[];
     correctAnswer: string;
 }
 
-export interface IExam {
+export interface IExam extends Document {
     questions: IQues[];
     duration: number;
     userAnswers: IUserAnswer[];
-    correctAnswers:{[key:number] : string};
+    correctAnswers: { [key: number]: string };
 }
 
-interface ExamModel extends IExam, Document {}
-
-const examSchema = new Schema<ExamModel>({
+const examSchema = new Schema<IExam>({
     questions: [
         {
             questionNumber: {
@@ -73,10 +73,20 @@ const examSchema = new Schema<ExamModel>({
                     },
                 },
             ],
+            startTime: {
+                type: Number,
+            },
+            expirationTime: {
+                type: Number,
+            },
         },
     ],
+    correctAnswers: {
+        type: Schema.Types.Mixed,
+        default: {},
+    },
 });
 
-const ExamModel = model<ExamModel>('Exam' , examSchema);
+const ExamModel = model<IExam>('Exam', examSchema);
 
 export default ExamModel;

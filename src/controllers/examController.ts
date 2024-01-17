@@ -1,3 +1,5 @@
+//This controller is handling Exam Creating Controls
+
 import Exam from "../db/exam";
 import { Request, Response } from "express";
 
@@ -14,7 +16,7 @@ const createExam = async (req: Request, res: Response) => {
 
         const existingQuestion = await Exam.findOne({ "questions.questionText": questions.questionText });
 
-        if(existingQuestion){
+        if (existingQuestion) {
             return res.status(400).json({ message: "Question already exists" });
         }
 

@@ -1,4 +1,4 @@
-//Controller handling submit exam controls
+// Controller handling the start exam functionality
 
 import Exam from "../db/exam";
 import { Request, Response } from "express";
@@ -12,12 +12,12 @@ interface MyToken {
     token: string;
 }
 
-const submitAnswers = async (req: Request, res: Response) => {
-    const { examId, answers } = req.body;
+const startExam = async (req: Request, res: Response) => {
+    const { examId } = req.body;
 
     // Check if required fields are present
-    if (!examId || !answers) {
-        res.status(400).json({ message: "Exam ID and answers are required" });
+    if (!examId) {
+        res.status(400).json({ message: "Exam ID is required" });
         return;
     }
 
@@ -42,34 +42,38 @@ const submitAnswers = async (req: Request, res: Response) => {
         const checkUser: IUser | null = await User.findOne({ email });
         const id: string = checkUser?._id!;
 
-        // Check if the user has already submitted answers for this exam
-        const userAnswerIndex = exam.userAnswers.findIndex((ua) => ua.userId === id);
+        // Check if the user has already started the exam
+        const userAnswer = exam.userAnswers.find((ua) => ua.userId === id);
 
-        if (userAnswerIndex !== -1) {
-            // User has already submitted answers
-            return res.status(400).json({ message: 'Answers already submitted' });
+        if (userAnswer && userAnswer.startTime) {
+            return res.status(400).json({ message: 'Exam already started' });
         }
 
-        // Save user answers and exam state to the database
+        // Save start time to the exam state
         const startTime = new Date().getTime();
-        const expirationTime = startTime + exam.duration * 60 * 1000; // Calculate expiration time based on duration
+        const expirationTime = startTime + exam.duration * 60 * 1000; // Calculating expiration time based on duration
 
-        exam.userAnswers.push({
-            userId: id,
-            answers,
-            startTime,
-            expirationTime,
-        });
+        if (!userAnswer) {
+            exam.userAnswers.push({
+                userId: id,
+                answers: [], // Add an empty array for answers
+                startTime,
+                expirationTime,
+            });
+        } else {
+            userAnswer.startTime = startTime;
+            userAnswer.expirationTime = expirationTime;
+        }
 
-        // Saving the updated exam document
+        // Save the updated exam document
         const savedExam = await exam.save();
 
         // Returning the saved exam data
         res.status(200).json(savedExam);
     } catch (error) {
-        console.error('Error submitting answers:', error);
+        console.error('Error starting exam:', error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
-export default submitAnswers;
+export default startExam;

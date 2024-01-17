@@ -1,4 +1,4 @@
-//Result Controller is used to calculate the result and display it 
+//This Controller is used to calculate the result and display it 
 
 import Exam , { IExam } from "../db/exam";
 import { Request, Response } from "express";
