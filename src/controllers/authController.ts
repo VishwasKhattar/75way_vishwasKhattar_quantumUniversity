@@ -82,7 +82,7 @@ try {
     //Setting my jwt token in Cookies
     
     res.cookie('jwt' , token , {
-        maxAge:100000
+        maxAge:600000
     });
     res.status(200).json({message : "LOGIN SUCCESS"});
 
