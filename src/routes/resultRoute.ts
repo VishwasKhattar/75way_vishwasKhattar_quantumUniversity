@@ -7,7 +7,7 @@ import authCreate from '../middlewares/authCreate';
 
 const router = express.Router();
 
-router.get('/results', authPage , authCreate , resultController);
+router.get('/results/:examId', authPage , authCreate , resultController);
 
 
 export default router;
