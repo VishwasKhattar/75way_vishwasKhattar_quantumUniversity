@@ -38,6 +38,9 @@ const calculateResults = (exam: IExam): { [key: string]: number } => {
             if (question && question.correctAnswer === answer.selectedOption) {
                 score += 1;
             }
+            else{
+                score -= .25;
+            }
         });
 
         results[userAnswer.userId] = score;
